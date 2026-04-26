@@ -1,0 +1,105 @@
+<!-- Footer Styles -->
+<style>
+    .footer {
+        background: #1e2a38;
+        color: #cfd8e3;
+        padding: 60px 0;
+        font-family: 'Poppins', sans-serif;
+    }
+
+    .footer .container {
+        width: 90%;
+        max-width: 1200px;
+        margin: auto;
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 40px;
+    }
+
+    .footer h4 {
+        font-size: 1.2em;
+        margin-bottom: 20px;
+        color: #ffffff;
+    }
+
+    .footer p {
+        line-height: 1.6;
+    }
+
+    .footer a {
+        color: #cfd8e3;
+        text-decoration: none;
+        display: block;
+        margin-bottom: 10px;
+        transition: color 0.3s;
+    }
+
+    .footer a:hover {
+        color: #00bcd4;
+    }
+
+    .social-icons a {
+        display: inline-block;
+        margin-right: 15px;
+        font-size: 1.5em;
+    }
+
+    .footer-bottom {
+        text-align: center;
+        padding-top: 40px;
+        margin-top: 40px;
+        border-top: 1px solid #4a627a;
+        font-size: 0.9em;
+    }
+
+    /* Mobile tweaks */
+    @media (max-width: 600px) {
+        .footer {
+            text-align: center;
+        }
+
+        .social-icons a {
+            margin: 0 10px;
+        }
+    }
+</style>
+
+<!-- Footer HTML -->
+<footer class="footer">
+    <div class="container">
+        <div>
+            <h4>Quick Staffing Solutions</h4>
+            <p>Your partner in professional growth, powered by <strong>EvoRES TECHNOLOGY</strong>. We are committed to
+                fostering careers and building exceptional teams across industries.</p>
+        </div>
+
+        <div>
+            <h4>Quick Links</h4>
+            <a href="#about">About Us</a>
+            <a href="#services">Services</a>
+            <a href="careers.html">Career Page</a>
+            <a href="#">Privacy Policy</a>
+        </div>
+
+        <div>
+            <h4>Contact Us</h4>
+            <p><i class="fa-solid fa-location-dot"></i> 123 Business Avenue, Hyderabad, Telangana, India</p>
+            <p><i class="fa-solid fa-phone"></i> +91 98765 43210</p>
+            <p><i class="fa-solid fa-envelope"></i> contact@quickstaffing.com</p>
+            <p><i class="fa-solid fa-file-invoice"></i> 37AAMFE8739J1ZQ</p>
+        </div>
+
+        <div>
+            <h4>Follow Us</h4>
+            <div class="social-icons">
+                <a href="#"><i class="fa-brands fa-linkedin"></i></a>
+                <a href="#"><i class="fa-brands fa-twitter"></i></a>
+                <a href="#"><i class="fa-brands fa-facebook"></i></a>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer-bottom">
+        <p>&copy; <span id="year"></span> Quick Staffing Solutions & EvoRES TECHNOLOGY LLP. All Rights Reserved.</p>
+    </div>
+</footer>

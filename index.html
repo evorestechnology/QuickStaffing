@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quick Staffing Solutions - Connecting Talent with Opportunity</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <a href="#" class="logo"><i class="fa-solid fa-people-roof"></i> Quick Staffing</a>
+            <button class="menu-toggle" type="button" aria-label="Toggle navigation"><i class="fa-solid fa-bars"></i></button>
+            <nav class="nav-menu">
+                <a href="#" class="active">Home</a>
+                <a href="#about">About Us</a>
+                <a href="#services">Services</a>
+                <a href="careers.html">Career Page</a>
+            </nav>
+        </div>
+    </header>
+
+    <section class="hero">
+        <div class="container">
+            <h1>Connecting Talent with Opportunity</h1>
+            <p>Your dedicated partner in building successful careers and powerful teams.</p>
+            <a href="careers.html" class="cta-button" style="padding: 15px 30px; font-size: 1.1em;">Find Your Dream Job</a>
+        </div>
+    </section>
+
+    <section id="about" class="section about-section">
+        <div class="container">
+            <h2 class="section-title">Who We Are</h2>
+            <div class="about-content">
+                <img src="https://images.unsplash.com/photo-1556761175-5973dc0f32e7?q=80&w=1932&auto=format&fit=crop" alt="Professional meeting">
+                <div>
+                    <h3>Strategic Partnership: Quick Staffing & EvoRES TECHNOLOGY</h3>
+                    <p>Quick Staffing Solutions is proud to announce its strategic collaboration with <strong>EvoRES TECHNOLOGY LLP</strong>. Together, we are bridging the gap between innovative technology and human capital. While Quick Staffing excels in identifying top-tier talent, EvoRES provides the technical backbone and strategic workflow designs that empower modern startups to thrive.</p>
+                    <p>Our unified mission is centered on the belief that a career is more than just a job—it's a path to transformation. By leveraging data-driven recruitment and cutting-edge operational strategies, we ensure that every placement aligns with both the candidate's aspirations and the company's long-term cultural and technical goals.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="services" class="section">
+        <div class="container">
+            <h2 class="section-title">Our Core Services</h2>
+            <div class="services-grid">
+                <div class="service-card">
+                    <div class="icon"><i class="fa-solid fa-user-tie"></i></div>
+                    <h3>Permanent Staffing</h3>
+                    <p>Finding long-term talent that fits your company culture and drives growth. We handle the entire process from sourcing to onboarding.</p>
+                </div>
+                <div class="service-card">
+                    <div class="icon"><i class="fa-solid fa-file-signature"></i></div>
+                    <h3>Contractual Hiring</h3>
+                    <p>Access flexible, project-based professionals to scale your team on-demand without long-term commitments.</p>
+                </div>
+                <div class="service-card">
+                    <div class="icon"><i class="fa-solid fa-comments"></i></div>
+                    <h3>Career Counseling</h3>
+                    <p>We provide expert guidance to candidates, helping them optimize their resumes, prepare for interviews, and navigate their career paths.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div id="footer"></div>
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const menuToggle = document.querySelector(".menu-toggle");
+            const navMenu = document.querySelector(".nav-menu");
+            if (menuToggle && navMenu) {
+                menuToggle.addEventListener("click", () => navMenu.classList.toggle("open"));
+            }
+
+            fetch("footer.html")
+                .then(res => res.text())
+                .then(data => {
+                    document.getElementById("footer").innerHTML = data;
+
+                    const yearEl = document.getElementById("year");
+                    if (yearEl) {
+                        yearEl.textContent = new Date().getFullYear();
+                    }
+                });
+        });
+    </script>
+</body>
+</html>

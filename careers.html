@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Job Listings - Quick Staffing Solutions</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <style>
+        /* Essential Styles */
+        .loader-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 60px;
+            width: 100%;
+            grid-column: 1 / -1;
+        }
+
+        .spinner {
+            width: 45px;
+            height: 45px;
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid #2563eb;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 15px;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        .job-description-full {
+            font-size: 0.95rem;
+            color: #4b5563;
+            line-height: 1.6;
+            margin: 15px 0;
+            white-space: pre-line;
+        }
+
+        .no-results {
+            text-align: center;
+            padding: 50px;
+            color: #9ca3af;
+            grid-column: 1 / -1;
+        }
+
+        .filter-label {
+            display: block;
+            margin-bottom: 8px;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+    </style>
+    <link rel="stylesheet" href="./careers.css">
+</head>
+
+<body>
+
+    <header class="header">
+        <div class="container">
+            <a href="./index.html" class="logo"><i class="fa-solid fa-people-roof"></i> Quick Staffing</a>
+            <button class="menu-toggle" type="button" aria-label="Toggle navigation"><i class="fa-solid fa-bars"></i></button>
+            <nav class="nav-menu">
+                <a href="./index.html">Home</a>
+                <a href="./index.html#about">About Us</a>
+                <a href="./index.html#services">Services</a>
+                <a href="./careers.html" class="active">Career Page</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="main-content">
+        <div class="container">
+            <aside class="filters-sidebar">
+                <h3><i class="fa-solid fa-filter"></i> Filter</h3>
+                <div class="filter-group">
+                    <h4>Search</h4>
+                    <input type="text" id="searchInput" placeholder="Search jobs...">
+                </div>
+                <div class="filter-group">
+                    <h4>Sort by Date</h4>
+                    <select id="sortSelect">
+                        <option value="new">Newest First</option>
+                        <option value="old">Oldest First</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <h4>Min Salary</h4>
+                    <input type="range" id="salaryRange" min="0" max="15000000" step="500000" value="0">
+                    <div id="salaryValue">Any Salary</div>
+                </div>
+                <div class="filter-group">
+                    <h4>Experience</h4>
+                    <div id="experienceFilters"></div>
+                </div>
+            </aside>
+
+            <div class="job-listings" id="jobContainer">
+                <div class="loader-container" id="loader">
+                    <div class="spinner"></div>
+                    <p>Fetching opportunities...</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        const API_URL = "https://script.google.com/macros/s/AKfycbxZziNKBH3Mp2R3Usx0W2tyHgiCLHcJPgLcLepAXHxG4NAdkcqKGqGgppDvz5RrpvIq/exec";
+        let jobs = [];
+
+        const formatINR = (num) => new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 }).format(num);
+
+        // Date Parser for DD-MM-YYYY
+        function parseCustomDate(dateStr) {
+            if (!dateStr || typeof dateStr !== 'string') return new Date();
+            const [day, month, year] = dateStr.split('-').map(Number);
+            return new Date(year, month - 1, day);
+        }
+
+        // Improved "Time Ago" logic
+        function getRelativeTime(date) {
+            const now = new Date();
+            const diffInMs = now - date;
+            const diffInDays = Math.floor(diffInMs / (1000 * 60 * 60 * 24));
+
+            if (diffInDays < 0) return "Today";
+            if (diffInDays === 0) return "Today";
+            if (diffInDays === 1) return "Yesterday";
+            if (diffInDays < 30) return `${diffInDays} days ago`;
+
+            const diffInMonths = Math.floor(diffInDays / 30);
+            if (diffInMonths < 12) {
+                return diffInMonths === 1 ? "1 month ago" : `${diffInMonths} months ago`;
+            }
+
+            const diffInYears = Math.floor(diffInDays / 365);
+            return diffInYears === 1 ? "1 year ago" : `${diffInYears} years ago`;
+        }
+
+        async function fetchJobs() {
+            try {
+                const res = await fetch(API_URL);
+                const data = await res.json();
+
+                // Map the JSON keys (handling keys with spaces)
+                jobs = data.filter(item => item.active === true).map(item => ({
+                    id: item["job id"],
+                    title: item["job title"],
+                    company: item["company"],
+                    location: item["location"],
+                    experience: item["experience"],
+                    salary: item["salary"],
+                    description: item["description"],
+                    posted_date: item["posted date"],
+                    action: item["action"]
+                }));
+
+                document.getElementById("loader").style.display = "none";
+                setupFilters();
+                renderJobs();
+            } catch (error) {
+                document.getElementById("jobContainer").innerHTML = `<div class="no-results">Error loading data.</div>`;
+            }
+        }
+
+        function setupFilters() {
+            const expLevels = [...new Set(jobs.map(j => j.experience).filter(Boolean))].sort();
+            const expDiv = document.getElementById("experienceFilters");
+            expDiv.innerHTML = "";
+            expLevels.forEach(e => {
+                expDiv.innerHTML += `<label class="filter-label"><input type="checkbox" name="experience" value="${e}"> ${e}</label>`;
+            });
+        }
+
+        function renderJobs() {
+            const container = document.getElementById("jobContainer");
+            const searchVal = document.getElementById("searchInput").value.toLowerCase();
+            const sortVal = document.getElementById("sortSelect").value;
+            const salaryVal = parseInt(document.getElementById("salaryRange").value);
+            const selectedExps = Array.from(document.querySelectorAll('input[name="experience"]:checked')).map(e => e.value);
+
+            let filtered = jobs.filter(job => {
+                const searchMatch = !searchVal || [job.title, job.company, job.location].some(v => String(v).toLowerCase().includes(searchVal));
+                const expMatch = selectedExps.length === 0 || selectedExps.includes(job.experience);
+                const cleanSalary = parseInt(String(job.salary).replace(/[^0-9]/g, '')) || 0;
+                return searchMatch && expMatch && cleanSalary >= salaryVal;
+            });
+
+            filtered.sort((a, b) => {
+                const dateA = parseCustomDate(a.posted_date);
+                const dateB = parseCustomDate(b.posted_date);
+                return sortVal === "new" ? dateB - dateA : dateA - dateB;
+            });
+
+            container.innerHTML = filtered.length ? "" : '<div class="no-results">No matches found.</div>';
+
+            filtered.forEach(job => {
+                const jobDate = parseCustomDate(job.posted_date);
+                const timeAgo = getRelativeTime(jobDate);
+
+                const card = document.createElement("div");
+                card.className = "job-card";
+                card.innerHTML = `
+                    <div class="job-card-header">
+                        <div>
+                            <h3 class="job-title">${job.title}</h3>
+                            <p class="company-name">${job.company}</p>
+                        </div>
+                    </div>
+                    <div class="job-meta">
+                        <span><i class="fa-solid fa-location-dot"></i> ${job.location}</span>
+                        <span><i class="fa-solid fa-briefcase"></i> ${job.experience}</span>
+                        <span><i class="fa-solid fa-wallet"></i> ${job.salary}</span>
+                    </div>
+                    <div class="job-description-full">${job.description}</div>
+                    <div class="job-footer">
+                        <span class="post-date">Posted: ${timeAgo}</span>
+                        <a href="${job.action}" class="apply-button">Apply Now</a>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        // Listeners
+        document.getElementById("searchInput").addEventListener("input", renderJobs);
+        document.getElementById("sortSelect").addEventListener("change", renderJobs);
+        document.getElementById("salaryRange").addEventListener("input", e => {
+            const val = parseInt(e.target.value);
+            document.getElementById("salaryValue").textContent = val === 0 ? "Any Salary" : "Min " + formatINR(val);
+            renderJobs();
+        });
+        document.addEventListener("change", e => { if (e.target.name === "experience") renderJobs(); });
+
+        fetchJobs();
+    </script>
+    <div id="footer"></div>
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const menuToggle = document.querySelector(".menu-toggle");
+            const navMenu = document.querySelector(".nav-menu");
+            if (menuToggle && navMenu) {
+                menuToggle.addEventListener("click", () => navMenu.classList.toggle("open"));
+            }
+
+            fetch("footer.html")
+                .then(res => res.text())
+                .then(data => {
+                    document.getElementById("footer").innerHTML = data;
+
+                    const yearEl = document.getElementById("year");
+                    if (yearEl) {
+                        yearEl.textContent = new Date().getFullYear();
+                    }
+                });
+        });
+    </script>
+</body>
+
+</html>
